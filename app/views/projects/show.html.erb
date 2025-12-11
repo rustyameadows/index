@@ -44,3 +44,20 @@
     </div>
   <% end %>
 </section>
+
+<section style="margin-top:1.5rem;">
+  <h2>Image uploads</h2>
+  <% if @image_uploads.any? %>
+    <div style="column-count:3; column-gap:12px;">
+      <% @image_uploads.each do |upload| %>
+        <div style="break-inside: avoid; margin-bottom:12px;">
+          <%= link_to project_upload_path(@project, upload), style: "display:block;" do %>
+            <%= image_tag url_for(upload.file), alt: upload.original_filename, style: "width:100%; height:auto; display:block; border:1px solid #eee; border-radius:4px;" %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p>No image uploads yet.</p>
+  <% end %>
+</section>
