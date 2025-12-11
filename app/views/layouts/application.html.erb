@@ -23,6 +23,29 @@
   </head>
 
   <body>
-    <%= yield %>
+    <header class="site-header" style="padding: 1rem 1.5rem; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center;">
+      <div class="brand">
+        <%= link_to "Index", root_path, style: "text-decoration:none; font-weight:700; color:#222;" %>
+      </div>
+      <nav class="user-nav" style="display:flex; gap: 0.75rem; align-items:center;">
+        <% if logged_in? %>
+          <span style="color:#555;">Signed in as <%= current_user.email %></span>
+          <%= button_to "Sign out", session_path, method: :delete, form: { style: "display:inline" }, class: "link-button" %>
+        <% else %>
+          <%= link_to "Sign in", new_session_path %>
+          <%= link_to "Sign up", new_user_path %>
+        <% end %>
+      </nav>
+    </header>
+
+    <main style="padding: 1.5rem;">
+      <% flash.each do |type, message| %>
+        <div class="flash flash-<%= type %>" style="margin-bottom: 1rem; padding: 0.75rem 1rem; border: 1px solid #ddd; background: #f8f9fa;">
+          <%= message %>
+        </div>
+      <% end %>
+
+      <%= yield %>
+    </main>
   </body>
 </html>

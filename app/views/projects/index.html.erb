@@ -1,0 +1,33 @@
+<h1>Your projects</h1>
+
+<% if @projects.any? %>
+  <ul style="list-style:none; padding:0; margin: 1rem 0;">
+    <% @projects.each do |project| %>
+      <li style="margin-bottom:0.5rem;">
+        <%= link_to project.title, project_path(project), style: "font-weight:600; text-decoration:none;" %>
+        <% if project.description.present? %>
+          <div style="color:#555;"><%= project.description %></div>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>You haven’t created any projects yet.</p>
+<% end %>
+
+<section style="margin-top:1.5rem;">
+  <h2>New project</h2>
+  <%= form_with model: @project, url: projects_path, local: true do |form| %>
+    <div>
+      <%= form.label :title %><br>
+      <%= form.text_field :title, required: true %>
+    </div>
+    <div style="margin-top:0.5rem;">
+      <%= form.label :description %><br>
+      <%= form.text_area :description, rows: 3 %>
+    </div>
+    <div style="margin-top:0.75rem;">
+      <%= form.submit "Create project" %>
+    </div>
+  <% end %>
+</section>

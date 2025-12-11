@@ -32,3 +32,11 @@ local:
 #   service: Mirror
 #   primary: local
 #   mirrors: [ amazon, google, microsoft ]
+
+# Placeholder for future Cloudflare R2 (production):
+# r2:
+#   service: S3
+#   access_key_id: <%= ENV["R2_ACCESS_KEY_ID"] %>
+#   secret_access_key: <%= ENV["R2_SECRET_ACCESS_KEY"] %>
+#   bucket: <%= ENV["R2_BUCKET"] %>
+#   endpoint: <%= ENV["R2_ENDPOINT"] %>

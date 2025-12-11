@@ -1,0 +1,29 @@
+<h1><%= @upload.original_filename %></h1>
+
+<p>
+  <strong>Project:</strong> <%= link_to @project.title, project_path(@project) %>
+</p>
+
+<table style="border-collapse:collapse; margin-top:0.5rem;">
+  <tr><th style="text-align:left; padding-right:1rem;">Content type</th><td><%= @upload.content_type %></td></tr>
+  <tr><th style="text-align:left; padding-right:1rem;">Size</th><td><%= number_to_human_size(@upload.byte_size) %></td></tr>
+  <tr><th style="text-align:left; padding-right:1rem;">Uploaded</th><td><%= l(@upload.uploaded_at, format: :long) if @upload.uploaded_at %></td></tr>
+</table>
+
+<p style="margin-top:0.75rem;">
+  <%= link_to "Download", download_project_upload_path(@project, @upload) %>
+</p>
+
+<% if @upload.file.attached? %>
+  <% if @upload.file.image? %>
+    <div style="margin-top:1rem;">
+      <%= image_tag url_for(@upload.file), alt: @upload.original_filename, style: "max-width:100%; height:auto; border:1px solid #ddd;" %>
+    </div>
+  <% elsif @upload.content_type&.include?("pdf") %>
+    <div style="margin-top:1rem; border:1px solid #ddd; height:480px;">
+      <iframe src="<%= rails_blob_path(@upload.file, disposition: 'inline') %>" title="PDF preview" style="width:100%; height:100%; border:0;"></iframe>
+    </div>
+  <% else %>
+    <p style="margin-top:1rem;">Preview not available for this file type.</p>
+  <% end %>
+<% end %>
