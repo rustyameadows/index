@@ -1,4 +1,7 @@
-<h1>Your projects</h1>
+<div style="display:flex; align-items:center; gap:0.75rem;">
+  <h1 style="margin:0;">Your projects</h1>
+  <%= link_to "New project", new_project_path, class: "button", style: "display:inline-block; padding:0.35rem 0.7rem; background:#111; color:#fff; text-decoration:none; border-radius:6px; font-size:0.95rem;" %>
+</div>
 
 <% if @projects.any? %>
   <ul style="list-style:none; padding:0; margin: 1rem 0;">
@@ -14,20 +17,3 @@
 <% else %>
   <p>You haven’t created any projects yet.</p>
 <% end %>
-
-<section style="margin-top:1.5rem;">
-  <h2>New project</h2>
-  <%= form_with model: @project, url: projects_path, local: true do |form| %>
-    <div>
-      <%= form.label :title %><br>
-      <%= form.text_field :title, required: true %>
-    </div>
-    <div style="margin-top:0.5rem;">
-      <%= form.label :description %><br>
-      <%= form.text_area :description, rows: 3 %>
-    </div>
-    <div style="margin-top:0.75rem;">
-      <%= form.submit "Create project" %>
-    </div>
-  <% end %>
-</section>

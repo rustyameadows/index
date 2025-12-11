@@ -23,19 +23,49 @@
   </head>
 
   <body>
-    <header class="site-header" style="padding: 1rem 1.5rem; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center;">
-      <div class="brand">
+    <style>
+      /* simple hover dropdown */
+      .projects-menu:hover .projects-menu__list { display: block; }
+      .projects-menu__list { display: none; }
+    </style>
+
+    <header class="site-header" style="padding: 1rem 1.5rem; border-bottom: 1px solid #ddd; display: flex; align-items: center; gap: 1rem;">
+      <div class="brand" style="display:flex; align-items:center; gap:0.75rem;">
         <%= link_to "Index", root_path, style: "text-decoration:none; font-weight:700; color:#222;" %>
-      </div>
-      <nav class="user-nav" style="display:flex; gap: 0.75rem; align-items:center;">
         <% if logged_in? %>
-          <span style="color:#555;">Signed in as <%= current_user.email %></span>
+          <div class="projects-menu" style="position:relative; cursor:pointer; padding:0.2rem 0.35rem; margin:-0.2rem -0.35rem; border-radius:6px;">
+            <div style="display:flex; align-items:center; gap:0.35rem;">
+              <span>Projects</span><span aria-hidden="true">▾</span>
+            </div>
+            <div class="projects-menu__list" style="position:absolute; left:0; margin-top:0.4rem; min-width:200px; background:#fff; border:1px solid #ddd; box-shadow:0 4px 12px rgba(0,0,0,0.08); padding:0.5rem 0; z-index:10;">
+              <% if nav_projects.any? %>
+                <ul style="list-style:none; margin:0; padding:0;">
+                  <% nav_projects.each do |project| %>
+                    <li style="padding:0.35rem 0.75rem;">
+                      <%= link_to project.title, project_path(project), style: "text-decoration:none; color:#222;" %>
+                    </li>
+                  <% end %>
+                </ul>
+              <% else %>
+                <div style="padding:0.5rem 0.75rem; color:#777;">No projects yet</div>
+              <% end %>
+              <div style="border-top:1px solid #eee; margin-top:0.35rem; padding:0.4rem 0.75rem;">
+                <%= link_to "New project", new_project_path, style: "text-decoration:none; color:#0066cc;" %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <div style="margin-left:auto; display:flex; align-items:center; gap:0.75rem;">
+        <% if logged_in? %>
+          <span style="color:#555;"><%= current_user.email %></span>
           <%= button_to "Sign out", session_path, method: :delete, form: { style: "display:inline" }, class: "link-button" %>
         <% else %>
+          <span style="color:#555;">Not signed in</span>
           <%= link_to "Sign in", new_session_path %>
           <%= link_to "Sign up", new_user_path %>
         <% end %>
-      </nav>
+      </div>
     </header>
 
     <main style="padding: 1.5rem;">

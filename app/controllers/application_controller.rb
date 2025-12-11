@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
 
   helper_method :current_user, :logged_in?
+  helper_method :nav_projects
 
   private
 
@@ -13,6 +14,11 @@ class ApplicationController < ActionController::Base
 
   def logged_in?
     current_user.present?
+  end
+
+  def nav_projects
+    return Project.none unless logged_in?
+    @nav_projects ||= current_user.projects.order(:title)
   end
 
   def require_login
