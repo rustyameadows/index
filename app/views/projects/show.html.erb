@@ -2,45 +2,15 @@
 <p style="color:#555;"><%= @project.description.presence || "No description provided." %></p>
 
 <section style="margin-top:1.5rem;">
-  <h2>Uploads</h2>
-
-  <% if @uploads.any? %>
-    <table style="width:100%; border-collapse:collapse; margin-top:0.75rem;">
-      <thead>
-        <tr>
-          <th style="text-align:left; padding:0.25rem 0;">Filename</th>
-          <th style="text-align:left; padding:0.25rem 0;">Type</th>
-          <th style="text-align:left; padding:0.25rem 0;">Size</th>
-          <th style="text-align:left; padding:0.25rem 0;">Uploaded</th>
-          <th style="text-align:left; padding:0.25rem 0;"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @uploads.each do |upload| %>
-          <tr>
-            <td style="padding:0.25rem 0;"><%= link_to upload.original_filename, project_upload_path(@project, upload) %></td>
-            <td style="padding:0.25rem 0;"><%= upload.content_type %></td>
-            <td style="padding:0.25rem 0;"><%= number_to_human_size(upload.byte_size) %></td>
-            <td style="padding:0.25rem 0;"><%= l(upload.uploaded_at, format: :short) if upload.uploaded_at %></td>
-            <td style="padding:0.25rem 0;"><%= link_to "Download", download_project_upload_path(@project, upload) %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  <% else %>
-    <p>No uploads yet.</p>
-  <% end %>
-</section>
-
-<section style="margin-top:1.5rem;">
   <h2>Add an upload</h2>
+  <p style="color:#666; margin-top:0; margin-bottom:0.5rem;">You can select up to 10 files at once.</p>
   <%= form_with model: @upload, url: project_uploads_path(@project), local: true, html: { multipart: true } do |form| %>
     <div>
-      <%= form.label :file, "Choose file" %><br>
-      <%= form.file_field :file, required: true %>
+      <%= form.label :files, "Choose files" %><br>
+      <%= form.file_field :files, multiple: true, required: true %>
     </div>
     <div style="margin-top:0.75rem;">
-      <%= form.submit "Upload file" %>
+      <%= form.submit "Upload files" %>
     </div>
   <% end %>
 </section>
