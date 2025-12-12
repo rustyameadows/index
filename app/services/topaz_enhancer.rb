@@ -100,7 +100,10 @@ class TopazEnhancer
 
   def send_request(source_upload, settings, file_body:)
     uri = URI.join(api_base, "/image/v1/enhance")
-    boundary = "----RubyTopaz#{SecureRandom.hex(8)}"
+    boundary = "----RubyTopaz#{SecureRandom.hex(8)}".b
+
+    body_file = file_body.dup
+    body_file.force_encoding(Encoding::BINARY)
 
     filtered_settings = settings.to_h.symbolize_keys.slice(*ALLOWED_FIELDS)
 
@@ -109,31 +112,31 @@ class TopazEnhancer
       next if value.nil?
       body_parts << build_form_field(boundary, key, value)
     end
-    body_parts << build_file_field(boundary, "image", source_upload.original_filename, source_upload.content_type, file_body)
-    body_parts << "--#{boundary}--\r\n"
+    body_parts << build_file_field(boundary, "image", source_upload.original_filename, source_upload.content_type, body_file)
+    body_parts << "--#{boundary}--\r\n".b
 
     request = Net::HTTP::Post.new(uri)
     request["X-API-Key"] = ENV["TOPAZ_API_KEY"]
     request["Content-Type"] = "multipart/form-data; boundary=#{boundary}"
     request["Accept"] = "*/*"
     request.body = body_parts.join
+    request.body.force_encoding(Encoding::BINARY)
 
     http = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https")
     http.request(request)
   end
 
   def build_form_field(boundary, name, value)
-    "--#{boundary}\r\nContent-Disposition: form-data; name=\"#{name}\"\r\n\r\n#{value}\r\n"
+    "--#{boundary}\r\nContent-Disposition: form-data; name=\"#{name}\"\r\n\r\n#{value}\r\n".b
   end
 
   def build_file_field(boundary, name, filename, content_type, file_body)
-    [
+    header = [
       "--#{boundary}\r\n",
       "Content-Disposition: form-data; name=\"#{name}\"; filename=\"#{filename}\"\r\n",
-      "Content-Type: #{content_type || 'application/octet-stream'}\r\n\r\n",
-      file_body,
-      "\r\n"
+      "Content-Type: #{content_type || 'application/octet-stream'}\r\n\r\n"
     ].join
+    header.b + file_body + "\r\n".b
   end
 
   def extension_from_content_type(content_type)
