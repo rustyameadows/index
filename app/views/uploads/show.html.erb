@@ -19,6 +19,44 @@
     <div style="margin-top:1rem;">
       <%= image_tag url_for(@upload.file), alt: @upload.original_filename, style: "max-width:100%; height:auto; border:1px solid #ddd;" %>
     </div>
+
+    <% if @upload.parent_upload&.file&.attached? && @upload.parent_upload.file.image? %>
+      <section style="margin-top:1.5rem;">
+        <h2>Compare with original</h2>
+        <div
+          data-controller="before-after"
+          data-before-after-initial-value="50"
+          style="max-width:100%;"
+        >
+          <div style="display:flex; gap:0.5rem; align-items:center; margin-bottom:0.5rem;">
+            <span style="font-size:0.9rem; color:#666;">Zoom:</span>
+            <button type="button" data-action="click->before-after#zoom" data-zoom="1" style="padding:0.25rem 0.5rem;">1×</button>
+            <button type="button" data-action="click->before-after#zoom" data-zoom="2" style="padding:0.25rem 0.5rem;">2×</button>
+            <button type="button" data-action="click->before-after#zoom" data-zoom="4" style="padding:0.25rem 0.5rem;">4×</button>
+          </div>
+          <div style="position:relative; overflow:auto; border:1px solid #ddd; max-height:70vh;">
+            <div data-before-after-target="stage" style="position:relative; width:100%;">
+              <%= image_tag url_for(@upload.parent_upload.file), alt: "Original #{@upload.parent_upload.original_filename}", style: "display:block; width:100%; height:auto;" %>
+              <%= image_tag url_for(@upload.file),
+                alt: "Enhanced #{@upload.original_filename}",
+                data: { "before-after-target": "afterImage" },
+                style: "position:absolute; top:0; left:0; width:100%; height:100%; object-fit:contain; clip-path: inset(0 50% 0 0); -webkit-clip-path: inset(0 50% 0 0);" %>
+              <div data-before-after-target="divider" style="position:absolute; top:0; left:50%; width:2px; height:100%; background:rgba(255,255,255,0.9); box-shadow:0 0 0 1px rgba(0,0,0,0.35); pointer-events:none;"></div>
+            </div>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value="50"
+            data-before-after-target="slider"
+            data-action="input->before-after#slide"
+            style="width:100%; margin-top:0.5rem;"
+          >
+          <p style="color:#666; font-size:0.9rem; margin:0.4rem 0 0 0;">Left: original. Right: enhanced.</p>
+        </div>
+      </section>
+    <% end %>
   <% elsif @upload.content_type&.include?("pdf") %>
     <div style="margin-top:1rem; border:1px solid #ddd; height:480px;">
       <iframe src="<%= rails_blob_path(@upload.file, disposition: 'inline') %>" title="PDF preview" style="width:100%; height:100%; border:0;"></iframe>
