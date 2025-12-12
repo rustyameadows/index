@@ -12,6 +12,7 @@ Rails.application.routes.draw do
 
   resources :projects, only: %i[index show create new] do
     resources :uploads, only: %i[create show] do
+      post :enhance, on: :member
       get :download, on: :member
     end
   end

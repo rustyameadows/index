@@ -27,3 +27,90 @@
     <p style="margin-top:1rem;">Preview not available for this file type.</p>
   <% end %>
 <% end %>
+
+<section style="margin-top:1.5rem;">
+  <h2>Enhanced versions</h2>
+  <% if @derived_uploads.any? %>
+    <ul style="list-style:none; padding:0; margin:0.5rem 0;">
+      <% @derived_uploads.each do |child| %>
+        <li style="padding:0.5rem 0; border-bottom:1px solid #eee;">
+          <div style="display:flex; align-items:center; gap:0.75rem;">
+            <% if child.file.attached? && child.file.image? %>
+              <%= link_to project_upload_path(@project, child) do %>
+                <%= image_tag url_for(child.file), alt: child.original_filename, style: "width:64px; height:64px; object-fit:cover; border:1px solid #ddd;" %>
+              <% end %>
+            <% end %>
+	            <div>
+	              <div><%= link_to child.original_filename, project_upload_path(@project, child) %></div>
+	              <div style="color:#666; font-size:0.9rem;">
+	                <%= child.processing_metadata["tool"]&.titleize || "Generated" %>
+	                &middot;
+	                <%= child.processing_metadata["status"] || "succeeded" %>
+	                <% if child.processing_metadata["run_at"] %>
+	                  &middot;
+	                  <%= l(Time.parse(child.processing_metadata["run_at"].to_s), format: :short) rescue child.processing_metadata["run_at"] %>
+	                <% end %>
+	              </div>
+	              <% if child.processing_metadata.present? %>
+	                <details style="margin-top:0.35rem;">
+	                  <summary style="cursor:pointer; color:#0d6efd; font-size:0.85rem;">Show processing metadata</summary>
+	                  <pre style="white-space:pre-wrap; background:#f8f9fa; padding:0.6rem; border:1px solid #eee; font-size:0.8rem; margin-top:0.35rem;"><%= JSON.pretty_generate(child.processing_metadata) %></pre>
+	                </details>
+	              <% end %>
+	            </div>
+	          </div>
+	        </li>
+	      <% end %>
+	    </ul>
+  <% else %>
+    <p>No enhanced versions yet.</p>
+  <% end %>
+
+  <div style="margin-top:1rem;">
+    <h3 style="margin:0 0 0.5rem 0;">Create an enhanced version</h3>
+    <p style="color:#666; margin:0 0 0.5rem 0;">Runs asynchronously; result will appear above.</p>
+    <%= form_with url: enhance_project_upload_path(@project, @upload), method: :post, local: true do |form| %>
+      <%= form.hidden_field :provider, value: :topaz %>
+
+      <fieldset style="border:1px solid #eee; padding:0.75rem; margin:0 0 0.75rem 0;">
+        <legend style="font-weight:600;">Topaz preset</legend>
+        <label><%= form.radio_button "topaz[preset]", "preserve", checked: true %> Preserve (High Fidelity)</label><br>
+        <label><%= form.radio_button "topaz[preset]", "low_res_assist" %> Low‑Res Assist (Standard V2)</label><br>
+        <label><%= form.radio_button "topaz[preset]", "sharpen_mild" %> Sharpen Mild</label><br>
+        <label><%= form.radio_button "topaz[preset]", "recovery_experimental" %> Recovery V2 (experimental, may invent detail)</label>
+      </fieldset>
+
+	      <fieldset style="border:1px solid #eee; padding:0.75rem; margin:0 0 0.75rem 0;">
+	        <legend style="font-weight:600;">Fine‑tune (optional)</legend>
+	        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:0.5rem;">
+	          <label>Strength <%= form.number_field "topaz[strength]", step: 0.05, min: 0, max: 1, placeholder: "auto" %></label>
+	          <label>Denoise <%= form.number_field "topaz[denoise]", step: 0.05, min: 0, max: 1, placeholder: "auto" %></label>
+	          <label>Sharpen <%= form.number_field "topaz[sharpen]", step: 0.05, min: 0, max: 1, placeholder: "auto" %></label>
+	          <label>Fix compression <%= form.number_field "topaz[fix_compression]", step: 0.05, min: 0, max: 1, placeholder: "auto" %></label>
+	        </div>
+	        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:0.5rem; margin-top:0.5rem;">
+	          <label>Output width (px) <%= form.number_field "topaz[output_width]", step: 1, min: 1, placeholder: "leave blank for original" %></label>
+	          <label>Output height (px) <%= form.number_field "topaz[output_height]", step: 1, min: 1, placeholder: "leave blank for original" %></label>
+	        </div>
+	        <div style="margin-top:0.5rem;">
+	          <label><%= form.check_box "topaz[face_enhancement]", {}, "1", "0" %> Face enhancement</label>
+	        </div>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:0.5rem; margin-top:0.5rem;">
+          <label>Face strength <%= form.number_field "topaz[face_enhancement_strength]", step: 0.05, min: 0, max: 1, placeholder: "0.5" %></label>
+          <label>Face creativity <%= form.number_field "topaz[face_enhancement_creativity]", step: 0.05, min: 0, max: 1, placeholder: "0.0" %></label>
+        </div>
+        <div style="margin-top:0.5rem;">
+          <label><%= form.check_box "topaz[authenticity_lock]", {}, "1", "0" %> Authenticity lock (caps strength/denoise/sharpen; disables creative faces)</label>
+        </div>
+      </fieldset>
+
+      <%= form.submit "Queue enhancement", style: "padding:0.55rem 0.9rem;" %>
+    <% end %>
+  </div>
+
+  <% if @upload.processing_metadata.present? && @upload.processing_metadata["status"] == "failed" %>
+    <div style="margin-top:0.75rem; padding:0.75rem; border:1px solid #f5c2c7; background:#f8d7da; color:#842029;">
+      Last enhancement attempt failed: <%= @upload.processing_metadata["error"] %>
+    </div>
+  <% end %>
+</section>

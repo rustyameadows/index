@@ -13,7 +13,8 @@ class ProjectsController < ApplicationController
   def show
     @upload = Upload.new
     @uploads = @project.uploads.order(created_at: :desc).includes(file_attachment: :blob)
-    @image_uploads = @uploads.select { |u| u.file.attached? && u.file.image? }
+    base_uploads = @uploads.select { |u| u.parent_upload_id.nil? }
+    @image_uploads = base_uploads.select { |u| u.file.attached? && u.file.image? }
   end
 
   def create
