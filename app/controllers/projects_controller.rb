@@ -16,6 +16,7 @@ class ProjectsController < ApplicationController
     base_uploads = @uploads.select { |u| u.parent_upload_id.nil? }
     @image_uploads = base_uploads.select { |u| u.file.attached? && u.file.image? }
     @entities = @project.entities.order(:name)
+    @pinned_entities = @project.entities.pinned.order(:name)
   end
 
   def create

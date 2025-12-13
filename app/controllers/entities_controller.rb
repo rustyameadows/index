@@ -2,9 +2,10 @@ class EntitiesController < ApplicationController
   before_action :require_login
   before_action :set_project
   before_action :set_entity, only: %i[show edit update destroy]
+  before_action :set_entity_with_toggle, only: %i[toggle_pin]
 
   def index
-    @entities = @project.entities.order(:name)
+    @entities = @project.entities.order(Arel.sql("pinned DESC"), :category, :name)
     @entity = Entity.new
   end
 
@@ -41,6 +42,11 @@ class EntitiesController < ApplicationController
     redirect_to project_entities_path(@project), notice: "Entity deleted."
   end
 
+  def toggle_pin
+    @entity.update!(pinned: !@entity.pinned)
+    redirect_back fallback_location: project_entities_path(@project), notice: (@entity.pinned? ? "Entity pinned." : "Entity unpinned.")
+  end
+
   private
 
   def set_project
@@ -48,6 +54,10 @@ class EntitiesController < ApplicationController
   end
 
   def set_entity
+    @entity = @project.entities.find(params[:id])
+  end
+
+  def set_entity_with_toggle
     @entity = @project.entities.find(params[:id])
   end
 

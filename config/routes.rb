@@ -16,6 +16,7 @@ Rails.application.routes.draw do
       get :download, on: :member
     end
     resources :entities do
+      patch :toggle_pin, on: :member
       resources :entity_uploads, only: %i[create destroy]
     end
   end

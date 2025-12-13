@@ -1,37 +1,58 @@
 <h1><%= @project.title %></h1>
 <p style="color:#555;"><%= @project.description.presence || "No description provided." %></p>
 
-<div style="margin:0.75rem 0 1.25rem 0;">
-  <%= link_to "Entities", project_entities_path(@project), style: "text-decoration:none; padding:0.4rem 0.7rem; border:1px solid #ddd; border-radius:6px; color:#0066cc;" %>
-</div>
-
-<section style="margin-top:1.5rem;">
-  <h2>Add an upload</h2>
-  <p style="color:#666; margin-top:0; margin-bottom:0.5rem;">You can select up to 10 files at once.</p>
-  <%= form_with model: @upload, url: project_uploads_path(@project), local: true, html: { multipart: true } do |form| %>
-    <div>
-      <%= form.label :files, "Choose files" %><br>
-      <%= form.file_field :files, multiple: true, required: true %>
+<div style="display:grid; grid-template-columns: 1fr 1.2fr; gap:1.5rem; align-items:start;">
+  <div>
+    <div style="margin:0.75rem 0 1.25rem 0;">
+      <%= link_to "Entities", project_entities_path(@project), style: "text-decoration:none; padding:0.4rem 0.7rem; border:1px solid #ddd; border-radius:6px; color:#0066cc;" %>
     </div>
-    <div style="margin-top:0.75rem;">
-      <%= form.submit "Upload files" %>
-    </div>
-  <% end %>
-</section>
 
-<section style="margin-top:1.5rem;">
-  <h2>Image uploads</h2>
-  <% if @image_uploads.any? %>
-    <div style="column-count:3; column-gap:12px;">
-      <% @image_uploads.each do |upload| %>
-        <div style="break-inside: avoid; margin-bottom:12px;">
-          <%= link_to project_upload_path(@project, upload), style: "display:block;" do %>
-            <%= image_tag url_for(upload.file), alt: upload.original_filename, style: "width:100%; height:auto; display:block; border:1px solid #eee; border-radius:4px;" %>
+    <% if @pinned_entities.any? %>
+      <section style="margin-top:1rem;">
+        <h3>Pinned entities</h3>
+        <ul style="list-style:none; padding:0; margin:0.5rem 0;">
+          <% @pinned_entities.each do |entity| %>
+            <li style="margin-bottom:0.35rem;">
+              <%= link_to entity.name, project_entity_path(@project, entity), style: "text-decoration:none; font-weight:600;" %>
+              <span style="padding:0.15rem 0.4rem; border:1px solid #ddd; border-radius:4px; font-size:0.85rem; color:#444; margin-left:0.35rem;"><%= entity.category.titleize %></span>
+              <span style="color:#c17b00; font-size:0.9rem; margin-left:0.35rem;">(pinned)</span>
+            </li>
           <% end %>
+        </ul>
+      </section>
+    <% end %>
+
+    <section style="margin-top:1.5rem;">
+      <h2>Add an upload</h2>
+      <p style="color:#666; margin-top:0; margin-bottom:0.5rem;">You can select up to 10 files at once.</p>
+      <%= form_with model: @upload, url: project_uploads_path(@project), local: true, html: { multipart: true } do |form| %>
+        <div>
+          <%= form.label :files, "Choose files" %><br>
+          <%= form.file_field :files, multiple: true, required: true %>
+        </div>
+        <div style="margin-top:0.75rem;">
+          <%= form.submit "Upload files" %>
         </div>
       <% end %>
-    </div>
-  <% else %>
-    <p>No image uploads yet.</p>
-  <% end %>
-</section>
+    </section>
+  </div>
+
+  <div>
+    <section>
+      <h2>Image uploads</h2>
+      <% if @image_uploads.any? %>
+        <div style="column-count:3; column-gap:8px;">
+          <% @image_uploads.each do |upload| %>
+            <div style="break-inside: avoid; margin-bottom:12px;">
+              <%= link_to project_upload_path(@project, upload), style: "display:block;" do %>
+                <%= image_tag url_for(upload.file), alt: upload.original_filename, style: "width:100%; height:auto; display:block; border:1px solid #eee; border-radius:4px; max-height:140px; object-fit:cover;" %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p>No image uploads yet.</p>
+      <% end %>
+    </section>
+  </div>
+</div>

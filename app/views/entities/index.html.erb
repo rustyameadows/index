@@ -1,14 +1,23 @@
 <h1>Entities</h1>
 
 <% if @entities.any? %>
-  <ul style="list-style:none; padding:0; margin:1rem 0;">
-    <% @entities.each do |entity| %>
-      <li style="margin-bottom:0.5rem; display:flex; gap:0.5rem; align-items:center;">
-        <span style="padding:0.2rem 0.45rem; border:1px solid #ddd; border-radius:4px; font-size:0.9rem; color:#444;"><%= entity.category.titleize %></span>
-        <%= link_to entity.name, project_entity_path(@project, entity), style: "font-weight:600; text-decoration:none;" %>
-      </li>
-    <% end %>
-  </ul>
+  <% Entity::CATEGORIES.each do |cat| %>
+    <% grouped = @entities.select { |e| e.category == cat } %>
+    <% next if grouped.empty? %>
+    <h3 style="margin:1rem 0 0.4rem 0;"><%= cat.titleize %></h3>
+    <ul style="list-style:none; padding:0; margin:0 0 1rem 0;">
+      <% grouped.each do |entity| %>
+        <li style="margin-bottom:0.4rem; display:flex; gap:0.5rem; align-items:center;">
+          <span style="padding:0.2rem 0.45rem; border:1px solid #ddd; border-radius:4px; font-size:0.9rem; color:#444;"><%= entity.category.titleize %></span>
+          <%= link_to entity.name, project_entity_path(@project, entity), style: "font-weight:600; text-decoration:none;" %>
+          <% if entity.pinned? %>
+            <span style="color:#c17b00; font-size:0.9rem;">(pinned)</span>
+          <% end %>
+          <%= button_to (entity.pinned? ? "Unpin" : "Pin"), toggle_pin_project_entity_path(@project, entity), method: :patch, class: "link-button", style: "margin-left:auto;" %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
 <% else %>
   <p>No entities yet.</p>
 <% end %>

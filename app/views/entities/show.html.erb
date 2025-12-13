@@ -3,12 +3,16 @@
     <h1><%= @entity.name %></h1>
     <p style="color:#555; margin:0.25rem 0 0.75rem 0;">
       <span style="padding:0.2rem 0.45rem; border:1px solid #ddd; border-radius:4px; font-size:0.9rem; color:#444;"><%= @entity.category.titleize %></span>
+      <% if @entity.pinned? %>
+        <span style="margin-left:0.4rem; color:#c17b00; font-size:0.95rem;">(pinned)</span>
+      <% end %>
     </p>
     <div style="margin-bottom:1rem; white-space:pre-line;"><%= @entity.description.presence || "No description." %></div>
 
     <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
       <%= link_to "Edit", edit_project_entity_path(@project, @entity), style: "text-decoration:none; padding:0.45rem 0.8rem; border:1px solid #ddd; border-radius:6px;" %>
       <%= link_to "Back to entities", project_entities_path(@project), style: "text-decoration:none; padding:0.45rem 0.8rem; border:1px solid #ddd; border-radius:6px;" %>
+      <%= button_to (@entity.pinned? ? "Unpin" : "Pin"), toggle_pin_project_entity_path(@project, @entity), method: :patch, class: "link-button" %>
       <%= button_to "Delete", project_entity_path(@project, @entity), method: :delete, data: { confirm: "Delete this entity?" }, form: { style: "display:inline" }, class: "link-button" %>
     </div>
   </div>

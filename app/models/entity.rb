@@ -7,4 +7,6 @@ class Entity < ApplicationRecord
 
   validates :name, presence: true, uniqueness: { scope: :project_id }
   validates :category, presence: true, inclusion: { in: CATEGORIES }
+
+  scope :pinned, -> { where(pinned: true) }
 end
