@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_11_234732) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_12_013510) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,28 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_11_234732) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "entities", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.string "name", null: false
+    t.string "category", null: false
+    t.text "description"
+    t.jsonb "metadata", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id", "name"], name: "index_entities_on_project_id_and_name", unique: true
+    t.index ["project_id"], name: "index_entities_on_project_id"
+  end
+
+  create_table "entity_uploads", force: :cascade do |t|
+    t.bigint "entity_id", null: false
+    t.bigint "upload_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["entity_id", "upload_id"], name: "index_entity_uploads_on_entity_id_and_upload_id", unique: true
+    t.index ["entity_id"], name: "index_entity_uploads_on_entity_id"
+    t.index ["upload_id"], name: "index_entity_uploads_on_upload_id"
   end
 
   create_table "projects", force: :cascade do |t|
@@ -77,6 +99,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_11_234732) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "entities", "projects"
+  add_foreign_key "entity_uploads", "entities"
+  add_foreign_key "entity_uploads", "uploads"
   add_foreign_key "projects", "users"
   add_foreign_key "uploads", "projects"
   add_foreign_key "uploads", "uploads", column: "parent_upload_id"

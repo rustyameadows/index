@@ -1,0 +1,18 @@
+<h1>Entities</h1>
+
+<% if @entities.any? %>
+  <ul style="list-style:none; padding:0; margin:1rem 0;">
+    <% @entities.each do |entity| %>
+      <li style="margin-bottom:0.5rem; display:flex; gap:0.5rem; align-items:center;">
+        <span style="padding:0.2rem 0.45rem; border:1px solid #ddd; border-radius:4px; font-size:0.9rem; color:#444;"><%= entity.category.titleize %></span>
+        <%= link_to entity.name, project_entity_path(@project, entity), style: "font-weight:600; text-decoration:none;" %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No entities yet.</p>
+<% end %>
+
+<div style="margin-top:1.5rem;">
+  <%= link_to "New entity", new_project_entity_path(@project), class: "button", style: "display:inline-block; padding:0.55rem 0.9rem; background:#111; color:#fff; text-decoration:none; border-radius:6px;" %>
+</div>

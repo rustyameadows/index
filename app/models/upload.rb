@@ -11,6 +11,9 @@ class Upload < ApplicationRecord
   validates :content_type, presence: true
   validates :byte_size, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
+  has_many :entity_uploads, dependent: :destroy
+  has_many :entities, through: :entity_uploads
+
   def image?
     file.attached? && file.image?
   end

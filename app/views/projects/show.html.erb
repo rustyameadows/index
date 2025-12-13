@@ -1,6 +1,10 @@
 <h1><%= @project.title %></h1>
 <p style="color:#555;"><%= @project.description.presence || "No description provided." %></p>
 
+<div style="margin:0.75rem 0 1.25rem 0;">
+  <%= link_to "Entities", project_entities_path(@project), style: "text-decoration:none; padding:0.4rem 0.7rem; border:1px solid #ddd; border-radius:6px; color:#0066cc;" %>
+</div>
+
 <section style="margin-top:1.5rem;">
   <h2>Add an upload</h2>
   <p style="color:#666; margin-top:0; margin-bottom:0.5rem;">You can select up to 10 files at once.</p>

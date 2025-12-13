@@ -15,6 +15,7 @@ class ProjectsController < ApplicationController
     @uploads = @project.uploads.order(created_at: :desc).includes(file_attachment: :blob)
     base_uploads = @uploads.select { |u| u.parent_upload_id.nil? }
     @image_uploads = base_uploads.select { |u| u.file.attached? && u.file.image? }
+    @entities = @project.entities.order(:name)
   end
 
   def create

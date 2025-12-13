@@ -13,7 +13,11 @@ class UploadsController < ApplicationController
   MAX_AUTH_SHARPEN = 0.25
   MAX_AUTH_FIX_COMPRESSION = 0.3
 
-  def show; end
+  def show
+    @entities = @project.entities.order(:name)
+    @linked_entities = @upload.entities.order(:name)
+    @available_entities = @entities.where.not(id: @linked_entities.pluck(:id))
+  end
 
   def create
     files = upload_params[:files]&.reject(&:blank?) || []

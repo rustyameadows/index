@@ -1,0 +1,65 @@
+<h1><%= @entity.name %></h1>
+<p style="color:#555; margin:0.25rem 0 1rem 0;">
+  <span style="padding:0.2rem 0.45rem; border:1px solid #ddd; border-radius:4px; font-size:0.9rem; color:#444;"><%= @entity.category.titleize %></span>
+</p>
+
+<div style="margin-bottom:1rem; white-space:pre-line;"><%= @entity.description.presence || "No description." %></div>
+
+<section style="margin-top:1rem;">
+  <h2>Related uploads</h2>
+  <% if @entity_uploads.any? %>
+    <ul style="list-style:none; padding:0; margin:0.5rem 0;">
+      <% @entity_uploads.each do |upload| %>
+        <li style="padding:0.5rem 0; border-bottom:1px solid #eee;">
+          <div style="display:flex; gap:0.75rem; align-items:center;">
+            <% if upload.file.attached? && upload.file.image? %>
+              <%= link_to project_upload_path(@project, upload) do %>
+                <%= image_tag url_for(upload.file), alt: upload.original_filename, style: "width:64px; height:64px; object-fit:cover; border:1px solid #ddd;" %>
+              <% end %>
+            <% end %>
+            <div>
+              <div><%= link_to upload.original_filename, project_upload_path(@project, upload) %></div>
+              <div style="color:#666; font-size:0.9rem;"><%= upload.content_type %> · <%= number_to_human_size(upload.byte_size) %></div>
+            </div>
+            <div style="margin-left:auto;">
+              <% if link = @entity.entity_uploads.find_by(upload_id: upload.id) %>
+                <%= button_to "Remove", project_entity_entity_upload_path(@project, @entity, link), method: :delete, data: { confirm: "Remove this upload from the entity?" }, class: "link-button" %>
+              <% end %>
+            </div>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>No uploads linked yet.</p>
+  <% end %>
+</section>
+
+<section style="margin-top:1.5rem;">
+  <h3>Add uploads to this entity</h3>
+  <% if @available_uploads.any? %>
+    <%= form_with url: project_entity_entity_uploads_path(@project, @entity), method: :post, local: true do %>
+      <div style="max-height:220px; overflow:auto; border:1px solid #eee; padding:0.5rem;">
+        <% @available_uploads.each do |upload| %>
+          <div>
+            <label>
+              <%= check_box_tag "upload_ids[]", upload.id %>
+              <%= upload.original_filename %> (<%= number_to_human_size(upload.byte_size) %>)
+            </label>
+          </div>
+        <% end %>
+      </div>
+      <div style="margin-top:0.75rem;">
+        <%= submit_tag "Link selected uploads" %>
+      </div>
+    <% end %>
+  <% else %>
+    <p>All uploads in this project are already linked.</p>
+  <% end %>
+</section>
+
+<div style="margin-top:1.5rem; display:flex; gap:1rem;">
+  <%= link_to "Edit", edit_project_entity_path(@project, @entity) %>
+  <%= link_to "Back to entities", project_entities_path(@project) %>
+  <%= button_to "Delete", project_entity_path(@project, @entity), method: :delete, data: { confirm: "Delete this entity?" }, form: { style: "display:inline" } %>
+</div>

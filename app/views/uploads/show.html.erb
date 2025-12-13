@@ -67,6 +67,36 @@
 <% end %>
 
 <section style="margin-top:1.5rem;">
+  <h2>Entities</h2>
+  <% if @linked_entities.any? %>
+    <ul style="list-style:none; padding:0; margin:0.5rem 0;">
+      <% @linked_entities.each do |entity| %>
+        <li style="margin-bottom:0.4rem; display:flex; gap:0.5rem; align-items:center;">
+          <%= render "entity_uploads/entity_badge", entity: entity %>
+          <%= link_to entity.name, project_entity_path(@project, entity), style: "text-decoration:none; font-weight:600;" %>
+          <% if link = entity.entity_uploads.find_by(upload_id: @upload.id) %>
+            <%= button_to "Remove", project_entity_entity_upload_path(@project, entity, link), method: :delete, form: { style: "display:inline" }, class: "link-button", style: "margin-left:auto;" %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>No entities linked yet.</p>
+  <% end %>
+
+  <% if @available_entities.any? %>
+    <div style="margin-top:0.5rem;">
+      <p style="margin-bottom:0.5rem;">Add to entity:</p>
+      <% @available_entities.each do |entity| %>
+        <div style="margin-bottom:0.35rem;">
+          <%= button_to "Link to #{entity.name}", project_entity_entity_uploads_path(@project, entity), method: :post, params: { upload_id: @upload.id }, class: "link-button" %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</section>
+
+<section style="margin-top:1.5rem;">
   <h2>Enhanced versions</h2>
   <% if @derived_uploads.any? %>
     <ul style="list-style:none; padding:0; margin:0.5rem 0;">

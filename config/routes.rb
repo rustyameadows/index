@@ -15,6 +15,9 @@ Rails.application.routes.draw do
       post :enhance, on: :member
       get :download, on: :member
     end
+    resources :entities do
+      resources :entity_uploads, only: %i[create destroy]
+    end
   end
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
