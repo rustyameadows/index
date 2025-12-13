@@ -15,6 +15,24 @@
       <%= button_to (@entity.pinned? ? "Unpin" : "Pin"), toggle_pin_project_entity_path(@project, @entity), method: :patch, class: "link-button" %>
       <%= button_to "Delete", project_entity_path(@project, @entity), method: :delete, data: { confirm: "Delete this entity?" }, form: { style: "display:inline" }, class: "link-button" %>
     </div>
+
+    <section style="margin-top:1.25rem;">
+      <h3>Backlinks (notes)</h3>
+      <% if @note_backlinks.any? %>
+        <ul style="list-style:none; padding:0; margin:0.5rem 0;">
+          <% @note_backlinks.each do |ref| %>
+            <% n = ref.note %>
+            <% next unless n %>
+            <li style="margin-bottom:0.35rem;">
+              <%= link_to (n.title.presence || n.slug), project_note_path(@project, n) %>
+              <span style="color:#666; font-size:0.9rem;">· updated <%= time_ago_in_words(n.updated_at) %> ago</span>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p>No notes reference this entity yet.</p>
+      <% end %>
+    </section>
   </div>
 
   <div data-controller="entity-carousel">

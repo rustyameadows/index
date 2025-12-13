@@ -3,8 +3,9 @@
 
 <div style="display:grid; grid-template-columns: 1fr 1.2fr; gap:1.5rem; align-items:start;">
   <div>
-    <div style="margin:0.75rem 0 1.25rem 0;">
+    <div style="margin:0.75rem 0 1.25rem 0; display:flex; gap:0.5rem; flex-wrap:wrap;">
       <%= link_to "Entities", project_entities_path(@project), style: "text-decoration:none; padding:0.4rem 0.7rem; border:1px solid #ddd; border-radius:6px; color:#0066cc;" %>
+      <%= link_to "Notes", project_notes_path(@project), style: "text-decoration:none; padding:0.4rem 0.7rem; border:1px solid #ddd; border-radius:6px; color:#0066cc;" %>
     </div>
 
     <% if @pinned_entities.any? %>

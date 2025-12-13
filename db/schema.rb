@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_12_024500) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_13_042010) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "action_text_rich_texts", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "body"
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+  end
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -65,6 +75,29 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_12_024500) do
     t.index ["upload_id"], name: "index_entity_uploads_on_upload_id"
   end
 
+  create_table "note_references", force: :cascade do |t|
+    t.bigint "note_id", null: false
+    t.string "referent_type", null: false
+    t.bigint "referent_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["note_id"], name: "index_note_references_on_note_id"
+    t.index ["referent_type", "referent_id"], name: "index_note_references_on_referent_type_and_referent_id"
+  end
+
+  create_table "notes", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.bigint "user_id", null: false
+    t.string "title"
+    t.string "slug"
+    t.text "plain_text"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id", "slug"], name: "index_notes_on_project_id_and_slug", unique: true
+    t.index ["project_id"], name: "index_notes_on_project_id"
+    t.index ["user_id"], name: "index_notes_on_user_id"
+  end
+
   create_table "projects", force: :cascade do |t|
     t.string "title", null: false
     t.text "description"
@@ -103,6 +136,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_12_024500) do
   add_foreign_key "entities", "projects"
   add_foreign_key "entity_uploads", "entities"
   add_foreign_key "entity_uploads", "uploads"
+  add_foreign_key "note_references", "notes"
+  add_foreign_key "notes", "projects"
+  add_foreign_key "notes", "users"
   add_foreign_key "projects", "users"
   add_foreign_key "uploads", "projects"
   add_foreign_key "uploads", "uploads", column: "parent_upload_id"

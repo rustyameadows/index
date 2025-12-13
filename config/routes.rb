@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       patch :toggle_pin, on: :member
       resources :entity_uploads, only: %i[create destroy]
     end
+    resources :notes
   end
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)

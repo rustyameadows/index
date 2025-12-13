@@ -42,6 +42,24 @@
         </div>
       <% end %>
     </section>
+
+    <section style="margin-top:1.25rem;">
+      <h2>Backlinks (notes)</h2>
+      <% if @note_backlinks.any? %>
+        <ul style="list-style:none; padding:0; margin:0.5rem 0;">
+          <% @note_backlinks.each do |ref| %>
+            <% n = ref.note %>
+            <% next unless n %>
+            <li style="margin-bottom:0.35rem;">
+              <%= link_to (n.title.presence || n.slug), project_note_path(@project, n) %>
+              <span style="color:#666; font-size:0.9rem;">· updated <%= time_ago_in_words(n.updated_at) %> ago</span>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p>No notes reference this upload yet.</p>
+      <% end %>
+    </section>
   </div>
 
   <div>

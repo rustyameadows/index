@@ -17,6 +17,7 @@ class UploadsController < ApplicationController
     @entities = @project.entities.order(:name)
     @linked_entities = @upload.entities.order(:name)
     @available_entities = @entities.where.not(id: @linked_entities.pluck(:id))
+    @note_backlinks = NoteReference.where(referent: @upload).includes(:note)
   end
 
   def create

@@ -1,0 +1,17 @@
+<%= form_with model: [@project, @note], local: true do |form| %>
+  <div>
+    <%= form.label :title %><br>
+    <%= form.text_field :title, placeholder: "Optional title" %>
+  </div>
+  <div style="margin-top:0.5rem;">
+    <%= form.label :slug, "Slug (optional, auto-generated)" %><br>
+    <%= form.text_field :slug, placeholder: "optional-slug" %>
+  </div>
+  <div style="margin-top:0.75rem;">
+    <%= form.label :body, "Body (supports [[Entity Name]] or [[Upload:123]] or [[Note:slug]])" %><br>
+    <%= form.rich_text_area :body %>
+  </div>
+  <div style="margin-top:0.75rem;">
+    <%= form.submit %>
+  </div>
+<% end %>

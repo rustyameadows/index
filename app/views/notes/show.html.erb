@@ -1,0 +1,56 @@
+<div style="display:flex; justify-content:space-between; align-items:center;">
+  <h1 style="margin:0;"><%= @note.title.presence || "Untitled" %></h1>
+  <div style="display:flex; gap:0.5rem;">
+    <%= link_to "Edit", edit_project_note_path(@project, @note), style: "text-decoration:none; padding:0.4rem 0.7rem; border:1px solid #ddd; border-radius:6px;" %>
+    <%= link_to "Back", project_notes_path(@project), style: "text-decoration:none; padding:0.4rem 0.7rem; border:1px solid #ddd; border-radius:6px;" %>
+    <%= button_to "Delete", project_note_path(@project, @note), method: :delete, data: { confirm: "Delete this note?" }, form: { style: "display:inline" }, class: "link-button" %>
+  </div>
+</div>
+
+<p style="color:#666; margin:0.4rem 0 1rem 0;">Updated <%= time_ago_in_words(@note.updated_at) %> ago</p>
+
+<article class="note-body">
+  <%= render_note_body(@note) %>
+</article>
+
+<section style="margin-top:1.25rem;">
+  <h3>Links out</h3>
+  <% refs = @note.note_references.includes(:referent) %>
+  <% if refs.any? %>
+    <ul style="list-style:none; padding:0; margin:0.5rem 0;">
+      <% refs.each do |ref| %>
+        <% r = ref.referent %>
+        <% next unless r %>
+        <li style="margin-bottom:0.35rem;">
+          <% if r.is_a?(Entity) %>
+            Entity: <%= link_to r.name, project_entity_path(@project, r) %>
+          <% elsif r.is_a?(Upload) %>
+            Upload: <%= link_to r.original_filename, project_upload_path(@project, r) %>
+          <% elsif r.is_a?(Note) %>
+            Note: <%= link_to (r.title.presence || r.slug), project_note_path(@project, r) %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>No outbound links.</p>
+  <% end %>
+</section>
+
+<section style="margin-top:1rem;">
+  <h3>Backlinks</h3>
+  <% if @backlinks.any? %>
+    <ul style="list-style:none; padding:0; margin:0.5rem 0;">
+      <% @backlinks.each do |ref| %>
+        <% n = ref.note %>
+        <% next unless n %>
+        <li style="margin-bottom:0.35rem;">
+          <%= link_to (n.title.presence || n.slug), project_note_path(@project, n) %>
+          <span style="color:#666; font-size:0.9rem;">· updated <%= time_ago_in_words(n.updated_at) %> ago</span>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>No backlinks.</p>
+  <% end %>
+</section>

@@ -12,6 +12,7 @@ class EntitiesController < ApplicationController
   def show
     @entity_uploads = @entity.uploads.includes(file_attachment: :blob).order(created_at: :desc)
     @available_uploads = @project.uploads.where.not(id: @entity.upload_ids).order(created_at: :desc)
+    @note_backlinks = NoteReference.where(referent: @entity).includes(:note)
   end
 
   def new
